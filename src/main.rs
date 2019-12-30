@@ -2,28 +2,26 @@
 #![no_std]
 
 // set the panic handler
+use embedded_hal::digital::v2::{InputPin, OutputPin};
+use generic_array::typenum::U1;
+use keyberon::debounce::Debouncer;
+use keyberon::impl_heterogenous_array;
+use keyberon::layout::Layout;
+use keyberon::matrix::{Matrix, PressedKeys};
 use panic_semihosting as _;
 use rtfm::app;
+use stm32f4xx_hal::gpio::gpioa::{PA0, PA1};
+use stm32f4xx_hal::gpio::{self, Input, Output, PullUp, PushPull};
 use stm32f4xx_hal::prelude::*;
 use stm32f4xx_hal::usb::{Peripheral, UsbBusType};
 use stm32f4xx_hal::{stm32, timer};
-use stm32f4xx_hal::gpio::{self, Input, Output, PushPull, PullUp};
-use keyberon::debounce::Debouncer;
-use keyberon::matrix::{Matrix, PressedKeys};
-use generic_array::typenum::{U1};
-use keyberon::impl_heterogenous_array;
-use embedded_hal::digital::v2::{InputPin, OutputPin};
-use stm32f4xx_hal::gpio::gpioa::{PA1, PA0};
 use usb_device::bus::UsbBusAllocator;
 use usb_device::class::UsbClass as _;
-use keyberon::layout::Layout;
 
 type UsbClass = keyberon::Class<'static, UsbBusType, Leds>;
 type UsbDevice = keyberon::Device<'static, UsbBusType>;
 
-pub struct Cols(
-    pub PA0<Input<PullUp>>,
-);
+pub struct Cols(pub PA0<Input<PullUp>>);
 impl_heterogenous_array! {
     Cols,
     dyn InputPin<Error = ()>,
@@ -31,9 +29,7 @@ impl_heterogenous_array! {
     [0]
 }
 
-pub struct Rows(
-    pub PA1<Output<PushPull>>,
-);
+pub struct Rows(pub PA1<Output<PushPull>>);
 impl_heterogenous_array! {
     Rows,
     dyn OutputPin<Error = ()>,
@@ -41,7 +37,8 @@ impl_heterogenous_array! {
     [0]
 }
 
-pub static LAYERS: keyberon::layout::Layers = &[&[&[keyberon::action::k(keyberon::key_code::KeyCode::Space)]]];
+pub static LAYERS: keyberon::layout::Layers =
+    &[&[&[keyberon::action::k(keyberon::key_code::KeyCode::Space)]]];
 
 pub struct Leds {
     caps_lock: gpio::gpioc::PC13<gpio::Output<gpio::PushPull>>,
@@ -67,7 +64,7 @@ const APP: () = {
         layout: Layout,
         timer: timer::Timer<stm32::TIM3>,
     }
-    
+
     #[init]
     fn init(c: init::Context) -> init::LateResources {
         static mut EP_MEMORY: [u32; 1024] = [0; 1024];
@@ -131,7 +128,9 @@ const APP: () = {
     #[task(binds = TIM3, priority = 1, resources = [usb_class, matrix, debouncer, layout, timer])]
     fn tick(mut c: tick::Context) {
         //c.resources.timer.clear_interrupt(timer::Event::TimeOut);
-        unsafe { &*stm32::TIM3::ptr() }.sr.write(|w| w.uif().clear_bit());
+        unsafe { &*stm32::TIM3::ptr() }
+            .sr
+            .write(|w| w.uif().clear_bit());
 
         if c.resources
             .debouncer
