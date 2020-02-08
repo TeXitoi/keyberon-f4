@@ -96,7 +96,7 @@ module case() {
                               rounded_square([22, 22], r=2, center=true);
                     }
                     hull() key_placement() translate([0,0,-8]) linear_extrude(8)
-                         square([switch_hole, switch_hole], center=true);
+                         square([switch_hole+0.5, switch_hole+0.5], center=true);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
@@ -128,4 +128,3 @@ color([0.7,0.7,0.7]) screw_placement() {
      translate([0,0,-6]) cylinder(d=2.7, h=6);
 }
 pill_placement() usb_c_pill();
-

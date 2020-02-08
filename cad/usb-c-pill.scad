@@ -8,7 +8,7 @@ e=0.1;
 button_height=2+thickness;
 
 module buttons() {
-     for (coord=[[2.4,-15,0], [-2.4,-15,0], [-2.4,-41,0]]) {
+     for (coord=[[2.4,-15,0], [-2.4,-15,0], [-2,-41,0]]) {
           translate(coord) translate([0,-e,button_height]) {
                children();
           }
@@ -55,7 +55,7 @@ module usb_c_pill_pocket() {
           linear_extrude(e+button_height) square([width-2, height+2*e], center=true);
      }
      buttons() {
-          translate([0, 0, -0.1]) linear_extrude(3, scale=3) rounded_square([2+1, 2.9+1], center=true, r=1.49);
+          translate([0, 0, -0.1]) linear_extrude(3, scale=3) rounded_square([2+0.7, 2.9+0.7], center=true, r=2.69/2);
      }
      usb_c_connector(epsilon=e);
      translate([0,1.6,0]) usb_c_connector(epsilon=e);
