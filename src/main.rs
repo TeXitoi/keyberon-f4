@@ -3,15 +3,17 @@
 
 // set the panic handler
 use embedded_hal::digital::v2::{InputPin, OutputPin};
-use generic_array::typenum::U1;
+use generic_array::typenum::{U13, U5};
+use keyberon::action::{d, k, l, m, Action, Action::*};
 use keyberon::debounce::Debouncer;
 use keyberon::impl_heterogenous_array;
+use keyberon::key_code::KbHidReport;
+use keyberon::key_code::KeyCode::{self, *};
 use keyberon::layout::Layout;
 use keyberon::matrix::{Matrix, PressedKeys};
 use panic_semihosting as _;
 use rtfm::app;
-use stm32f4xx_hal::gpio::gpioa::{PA0, PA1};
-use stm32f4xx_hal::gpio::{self, Input, Output, PullUp, PushPull};
+use stm32f4xx_hal::gpio::{self, gpioa, gpiob, Input, Output, PullUp, PushPull};
 use stm32f4xx_hal::prelude::*;
 use stm32f4xx_hal::usb::{Peripheral, UsbBusType};
 use stm32f4xx_hal::{stm32, timer};
@@ -21,24 +23,65 @@ use usb_device::class::UsbClass as _;
 type UsbClass = keyberon::Class<'static, UsbBusType, Leds>;
 type UsbDevice = keyberon::Device<'static, UsbBusType>;
 
-pub struct Cols(pub PA0<Input<PullUp>>);
+pub struct Cols(
+    gpiob::PB14<Input<PullUp>>,
+    gpiob::PB15<Input<PullUp>>,
+    gpiob::PB5<Input<PullUp>>,
+    gpiob::PB6<Input<PullUp>>,
+    gpiob::PB7<Input<PullUp>>,
+    gpiob::PB8<Input<PullUp>>,
+    gpioa::PA5<Input<PullUp>>,
+    gpioa::PA6<Input<PullUp>>,
+    gpioa::PA7<Input<PullUp>>,
+    gpiob::PB0<Input<PullUp>>,
+    gpiob::PB1<Input<PullUp>>,
+    gpiob::PB10<Input<PullUp>>,
+    gpioa::PA0<Input<PullUp>>,
+);
 impl_heterogenous_array! {
     Cols,
     dyn InputPin<Error = ()>,
-    U1,
-    [0]
+    U13,
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 }
 
-pub struct Rows(pub PA1<Output<PushPull>>);
+pub struct Rows(
+    gpioa::PA4<Output<PushPull>>,
+    gpioa::PA3<Output<PushPull>>,
+    gpioa::PA2<Output<PushPull>>,
+    gpioa::PA1<Output<PushPull>>,
+    gpiob::PB9<Output<PushPull>>,
+);
 impl_heterogenous_array! {
     Rows,
     dyn OutputPin<Error = ()>,
-    U1,
-    [0]
+    U5,
+    [0, 1, 2, 3, 4]
 }
 
-pub static LAYERS: keyberon::layout::Layers =
-    &[&[&[keyberon::action::k(keyberon::key_code::KeyCode::Space)]]];
+const CUT: Action = m(&[LShift, Delete]);
+const COPY: Action = m(&[LCtrl, Insert]);
+const PASTE: Action = m(&[LShift, Insert]);
+const C_ENTER: Action = HoldTap(200, &k(LCtrl), &k(Enter));
+const L1_SP: Action = HoldTap(200, &l(1), &k(Space));
+const CENTER: Action = m(&[LCtrl, Enter]);
+
+#[rustfmt::skip]
+pub static LAYERS: keyberon::layout::Layers = &[
+    &[
+        &[k(Grave),   k(Kb1),k(Kb2),k(Kb3), k(Kb4),k(Kb5),   k(Kb6),   k(Kb7), k(Kb8), k(Kb9),  k(Kb0),   k(Minus)   , k(Space)],
+        &[k(Tab),     k(Q),  k(W),  k(E),   k(R),  k(T),     k(Y),     k(U),   k(I),   k(O),    k(P),     k(LBracket)],
+        &[k(RBracket),k(A),  k(S),  k(D),   k(F),  k(G),     k(H),     k(J),   k(K),   k(L),    k(SColon),k(Quote)   ],
+        &[k(Equal),   k(Z),  k(X),  k(C),   k(V),  k(B),     k(N),     k(M),   k(Comma),k(Dot), k(Slash), k(Bslash)  ],
+        &[Trans,      Trans, k(LGui),k(LAlt),L1_SP,k(LShift),k(RShift),C_ENTER,k(RAlt),k(BSpace),Trans,   Trans      ],
+    ], &[
+        &[k(F1),k(F2),k(F3),     k(F4),k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
+        &[Trans,Trans,Trans,     Trans,Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
+        &[d(0), d(1), k(NumLock),Trans,k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
+        &[Trans,Trans,CUT,       COPY, PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
+        &[Trans,Trans,Trans,     Trans,Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
+    ],
+];
 
 pub struct Leds {
     caps_lock: gpio::gpioc::PC13<gpio::Output<gpio::PushPull>>,
@@ -59,8 +102,7 @@ const APP: () = {
         usb_dev: UsbDevice,
         usb_class: UsbClass,
         matrix: Matrix<Cols, Rows>,
-        debouncer: Debouncer<PressedKeys<U1, U1>>,
-        #[init(Layout::new(LAYERS))]
+        debouncer: Debouncer<PressedKeys<U5, U13>>,
         layout: Layout,
         timer: timer::Timer<stm32::TIM3>,
     }
@@ -79,8 +121,9 @@ const APP: () = {
             .require_pll48clk()
             .freeze();
         let gpioa = c.device.GPIOA.split();
-
+        let gpiob = c.device.GPIOB.split();
         let gpioc = c.device.GPIOC.split();
+
         let mut led = gpioc.pc13.into_push_pull_output();
         led.set_low().unwrap();
         let leds = Leds { caps_lock: led };
@@ -102,16 +145,37 @@ const APP: () = {
         timer.listen(timer::Event::TimeOut);
 
         let matrix = Matrix::new(
-            Cols(gpioa.pa0.into_pull_up_input()),
-            Rows(gpioa.pa1.into_push_pull_output()),
+            Cols(
+                gpiob.pb14.into_pull_up_input(),
+                gpiob.pb15.into_pull_up_input(),
+                gpiob.pb5.into_pull_up_input(),
+                gpiob.pb6.into_pull_up_input(),
+                gpiob.pb7.into_pull_up_input(),
+                gpiob.pb8.into_pull_up_input(),
+                gpioa.pa5.into_pull_up_input(),
+                gpioa.pa6.into_pull_up_input(),
+                gpioa.pa7.into_pull_up_input(),
+                gpiob.pb0.into_pull_up_input(),
+                gpiob.pb1.into_pull_up_input(),
+                gpiob.pb10.into_pull_up_input(),
+                gpioa.pa0.into_pull_up_input(),
+            ),
+            Rows(
+                gpioa.pa4.into_push_pull_output(),
+                gpioa.pa3.into_push_pull_output(),
+                gpioa.pa2.into_push_pull_output(),
+                gpioa.pa1.into_push_pull_output(),
+                gpiob.pb9.into_push_pull_output(),
+            ),
         );
 
         init::LateResources {
             usb_dev,
             usb_class,
             timer,
-            debouncer: Debouncer::new(PressedKeys::new(), PressedKeys::new(), 5),
+            debouncer: Debouncer::new(PressedKeys::default(), PressedKeys::default(), 5),
             matrix: matrix.unwrap(),
+            layout: Layout::new(LAYERS),
         }
     }
 
@@ -132,19 +196,24 @@ const APP: () = {
             .sr
             .write(|w| w.uif().clear_bit());
 
-        if c.resources
+        for event in c
+            .resources
             .debouncer
-            .update(c.resources.matrix.get().unwrap())
+            .events(c.resources.matrix.get().unwrap())
         {
-            let data = c.resources.debouncer.get();
-            let report = c.resources.layout.report_from_pressed(data.iter_pressed());
-            c.resources
-                .usb_class
-                .lock(|k| k.device_mut().set_keyboard_report(report.clone()));
-            while let Ok(0) = c.resources.usb_class.lock(|k| k.write(report.as_bytes())) {}
+            send_report(c.resources.layout.event(event), &mut c.resources.usb_class);
         }
+        send_report(c.resources.layout.tick(), &mut c.resources.usb_class);
     }
 };
+
+fn send_report(iter: impl Iterator<Item = KeyCode>, usb_class: &mut resources::usb_class<'_>) {
+    use rtfm::Mutex;
+    let report: KbHidReport = iter.collect();
+    if usb_class.lock(|k| k.device_mut().set_keyboard_report(report.clone())) {
+        while let Ok(0) = usb_class.lock(|k| k.write(report.as_bytes())) {}
+    }
+}
 
 fn usb_poll(usb_dev: &mut UsbDevice, keyboard: &mut UsbClass) {
     if usb_dev.poll(&mut [keyboard]) {
