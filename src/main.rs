@@ -4,7 +4,7 @@
 // set the panic handler
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 use generic_array::typenum::{U13, U5};
-use keyberon::action::{d, k, l, m, Action, Action::*};
+use keyberon::action::{k, l, m, Action, Action::*};
 use keyberon::debounce::Debouncer;
 use keyberon::impl_heterogenous_array;
 use keyberon::key_code::KbHidReport;
@@ -75,11 +75,11 @@ pub static LAYERS: keyberon::layout::Layers = &[
         &[k(Equal),   k(Z),  k(X),  k(C),   k(V),  k(B),     k(N),     k(M),   k(Comma),k(Dot), k(Slash), k(Bslash)  ],
         &[Trans,      Trans, k(LGui),k(LAlt),L1_SP,k(LShift),k(RShift),C_ENTER,k(RAlt),k(BSpace),Trans,   Trans      ],
     ], &[
-        &[k(F1),k(F2),k(F3),     k(F4),k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
-        &[Trans,Trans,Trans,     Trans,Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
-        &[d(0), d(1), k(NumLock),Trans,k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
-        &[Trans,Trans,CUT,       COPY, PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
-        &[Trans,Trans,Trans,     Trans,Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
+        &[k(F1),k(F2),   k(F3),     k(F4),     k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
+        &[Trans,k(Pause),Trans,     k(PScreen),Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
+        &[Trans,Trans,   k(NumLock),k(Insert), k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
+        &[Trans,Trans,   CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
+        &[Trans,Trans,   Trans,     Trans,     Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
     ],
 ];
 
