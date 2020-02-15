@@ -2,6 +2,9 @@
 #![no_std]
 
 // set the panic handler
+use panic_semihosting as _;
+
+use core::convert::Infallible;
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 use generic_array::typenum::{U13, U5};
 use keyberon::action::{k, l, m, Action, Action::*};
@@ -11,11 +14,10 @@ use keyberon::key_code::KbHidReport;
 use keyberon::key_code::KeyCode::{self, *};
 use keyberon::layout::Layout;
 use keyberon::matrix::{Matrix, PressedKeys};
-use panic_semihosting as _;
 use rtfm::app;
 use stm32f4xx_hal::gpio::{self, gpioa, gpiob, Input, Output, PullUp, PushPull};
+use stm32f4xx_hal::otg_fs::{UsbBusType, USB};
 use stm32f4xx_hal::prelude::*;
-use stm32f4xx_hal::usb::{Peripheral, UsbBusType};
 use stm32f4xx_hal::{stm32, timer};
 use usb_device::bus::UsbBusAllocator;
 use usb_device::class::UsbClass as _;
@@ -40,7 +42,7 @@ pub struct Cols(
 );
 impl_heterogenous_array! {
     Cols,
-    dyn InputPin<Error = ()>,
+    dyn InputPin<Error = Infallible>,
     U13,
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 }
@@ -54,7 +56,7 @@ pub struct Rows(
 );
 impl_heterogenous_array! {
     Rows,
-    dyn OutputPin<Error = ()>,
+    dyn OutputPin<Error = Infallible>,
     U5,
     [0, 1, 2, 3, 4]
 }
@@ -116,8 +118,7 @@ const APP: () = {
         let clocks = rcc
             .cfgr
             .use_hse(25.mhz())
-            .sysclk(48.mhz())
-            .pclk1(24.mhz())
+            .sysclk(84.mhz())
             .require_pll48clk()
             .freeze();
         let gpioa = c.device.GPIOA.split();
@@ -128,7 +129,7 @@ const APP: () = {
         led.set_low().unwrap();
         let leds = Leds { caps_lock: led };
 
-        let usb = Peripheral {
+        let usb = USB {
             usb_global: c.device.OTG_FS_GLOBAL,
             usb_device: c.device.OTG_FS_DEVICE,
             usb_pwrclk: c.device.OTG_FS_PWRCLK,
