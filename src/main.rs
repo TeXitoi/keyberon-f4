@@ -2,7 +2,7 @@
 #![no_std]
 
 // set the panic handler
-use panic_semihosting as _;
+use panic_halt as _;
 
 use core::convert::Infallible;
 use embedded_hal::digital::v2::{InputPin, OutputPin};
