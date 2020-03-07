@@ -5,7 +5,7 @@ authors = ["Guillaume Pinot <texitoi@texitoi.eu>"]
 edition = "2018"
 
 [dependencies]
-stm32f4xx-hal = { git = "https://github.com/stm32-rs/stm32f4xx-hal", features = ["rt", "stm32f401", "usb_fs"] }
+stm32f4xx-hal = { version = "0.7.0", features = ["rt", "stm32f401", "usb_fs"] }
 cortex-m = "0.6"
 cortex-m-rt = { version = "0.6.10", features = ["device"] }
 panic-halt = "0.2.0"
