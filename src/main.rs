@@ -80,7 +80,7 @@ pub static LAYERS: keyberon::layout::Layers = &[
         &[k(F1),k(F2),   k(F3),     k(F4),     k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
         &[Trans,k(Pause),Trans,     k(PScreen),Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
         &[Trans,Trans,   k(NumLock),k(Insert), k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
-        &[Trans,Trans,   CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
+        &[Trans,k(Undo), CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
         &[Trans,Trans,   Trans,     Trans,     Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
     ],
 ];
