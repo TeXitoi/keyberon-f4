@@ -68,6 +68,9 @@ const C_ENTER: Action = HoldTap(200, &k(LCtrl), &k(Enter));
 const L1_SP: Action = HoldTap(200, &l(1), &k(Space));
 const CENTER: Action = m(&[LCtrl, Enter]);
 
+// The 13th column is the hardware button of the development board,
+// thus all the column is activated when the button is pushed. Because
+// of that, only one action is defined in the 13th column.
 #[rustfmt::skip]
 pub static LAYERS: keyberon::layout::Layers = &[
     &[
