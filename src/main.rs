@@ -64,8 +64,16 @@ impl_heterogenous_array! {
 const CUT: Action = m(&[LShift, Delete]);
 const COPY: Action = m(&[LCtrl, Insert]);
 const PASTE: Action = m(&[LShift, Insert]);
-const C_ENTER: Action = HoldTap(200, &k(LCtrl), &k(Enter));
-const L1_SP: Action = HoldTap(200, &l(1), &k(Space));
+const C_ENTER: Action = HoldTap {
+    timeout: 200,
+    hold: &k(LCtrl),
+    tap: &k(Enter),
+};
+const L1_SP: Action = HoldTap {
+    timeout: 200,
+    hold: &l(1),
+    tap: &k(Space),
+};
 const CENTER: Action = m(&[LCtrl, Enter]);
 
 // The 13th column is the hardware button of the development board,
@@ -80,11 +88,11 @@ pub static LAYERS: keyberon::layout::Layers = &[
         &[k(Equal),   k(Z),  k(X),  k(C),   k(V),  k(B),     k(N),     k(M),   k(Comma),k(Dot), k(Slash), k(Bslash)  ],
         &[Trans,      Trans, k(LGui),k(LAlt),L1_SP,k(LShift),k(RShift),C_ENTER,k(RAlt),k(BSpace),Trans,   Trans      ],
     ], &[
-        &[k(F1),k(F2),   k(F3),     k(F4),     k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
-        &[Trans,k(Pause),Trans,     k(PScreen),Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
-        &[Trans,Trans,   k(NumLock),k(Insert), k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
-        &[Trans,k(Undo), CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
-        &[Trans,Trans,   Trans,     Trans,     Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
+        &[k(F1),         k(F2),   k(F3),     k(F4),     k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
+        &[Trans,         k(Pause),Trans,     k(PScreen),Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
+        &[Trans,         Trans,   k(NumLock),k(Insert), k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
+        &[k(NonUsBslash),k(Undo), CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
+        &[Trans,         Trans,   Trans,     Trans,     Trans,    Trans,Trans,      CENTER, Trans,    Trans,  Trans,   Trans ],
     ],
 ];
 
