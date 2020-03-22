@@ -203,10 +203,7 @@ const APP: () = {
 
     #[task(binds = TIM3, priority = 1, resources = [usb_class, matrix, debouncer, layout, timer])]
     fn tick(mut c: tick::Context) {
-        //c.resources.timer.clear_interrupt(timer::Event::TimeOut);
-        unsafe { &*stm32::TIM3::ptr() }
-            .sr
-            .write(|w| w.uif().clear_bit());
+        c.resources.timer.clear_interrupt(timer::Event::TimeOut);
 
         for event in c
             .resources
