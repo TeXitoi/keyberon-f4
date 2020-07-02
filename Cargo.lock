@@ -178,6 +178,7 @@ dependencies = [
  "cortex-m-rt 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "cortex-m-rtfm 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "embedded-hal 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "generic-array 0.13.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "keyberon 0.1.0 (git+https://github.com/TeXitoi/keyberon)",
  "panic-halt 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "stm32f4xx-hal 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
