@@ -14,7 +14,7 @@ use keyberon::key_code::KbHidReport;
 use keyberon::key_code::KeyCode::{self, *};
 use keyberon::layout::Layout;
 use keyberon::matrix::{Matrix, PressedKeys};
-use rtfm::app;
+use rtic::app;
 use stm32f4xx_hal::gpio::{self, gpioa, gpiob, Input, Output, PullUp, PushPull};
 use stm32f4xx_hal::otg_fs::{UsbBusType, USB};
 use stm32f4xx_hal::prelude::*;
@@ -23,7 +23,7 @@ use usb_device::bus::UsbBusAllocator;
 use usb_device::class::UsbClass as _;
 
 type UsbClass = keyberon::Class<'static, UsbBusType, Leds>;
-type UsbDevice = keyberon::Device<'static, UsbBusType>;
+type UsbDevice = usb_device::device::UsbDevice<'static, UsbBusType>;
 
 pub struct Cols(
     gpiob::PB14<Input<PullUp>>,
@@ -239,7 +239,7 @@ const APP: () = {
 };
 
 fn send_report(iter: impl Iterator<Item = KeyCode>, usb_class: &mut resources::usb_class<'_>) {
-    use rtfm::Mutex;
+    use rtic::Mutex;
     let report: KbHidReport = iter.collect();
     if usb_class.lock(|k| k.device_mut().set_keyboard_report(report.clone())) {
         while let Ok(0) = usb_class.lock(|k| k.write(report.as_bytes())) {}
