@@ -14,7 +14,7 @@ nb_thumbs=4;
 hand_spacing=20;
 hand_angle=30;
 center_screw=false;
-case_border=7;
+case_border=3.5;
 top=8;// might need some tweeks if you cange hand_angle or first delta
 
 // insert hole, can be adjusted depending on the size of your insert
@@ -53,11 +53,11 @@ module outline(border, r) {
      union() {
           for (side=[-1,1]) {
                hull() one_side_key_placement(side, nb_cols, nb_rows, nb_thumbs)
-                    rounded_square([base+border, base+border], r=r, center=true);
+                    rounded_square([base+border*2, base+border*2], r=r, center=true);
           }
           hull() for (side=[-1,1]) {
                one_side_key_placement(side, nb_c=1, nb_r=nb_rows, nb_t=nb_thumbs)
-                    rounded_square([base+border, base+border], r=r, center=true);
+                    rounded_square([base+border*2, base+border*2], r=r, center=true);
           }
           translate([0, -20+top-case_border+border+1.2]) square([80, 40], center=true);
      }
