@@ -5,56 +5,79 @@ include <printing.scad>
 
 switch_hole=14.1;// by spec should be 14, can be adjusted for printer imprecision
 inter_switch=19.05;
-thickness=1.6;
+thickness=1.6;// plate thinkness
 d=2.54;
-deltas=[-d,0,d,0,-3*d,-4*d];
+deltas=[-d,0,d,0,-4*d,-5*d];// column stagger
 nb_cols=6;
-nb_rows=4;
+nb_rows=3;
 nb_thumbs=4;
 hand_spacing=20;
 hand_angle=30;
-top=19.92;// should be calculated...
+center_screw=false;
+case_border=7;
+top=8;// might need some tweeks if you cange hand_angle or first delta
 
 // insert hole, can be adjusted depending on the size of your insert
 // or if you use autotaping screws
 insert_diameter=3.2;
 insert_height=4.6;
 
-module key_placement() {
-     for (s=[-1,1]) {
-          translate([s * hand_spacing/2,0,0]) rotate([0,0,s*hand_angle/2]) {
-               for (j=[0:nb_cols-1]) {
-                    translate([s*(j+0.5)*inter_switch, deltas[j], 0]) {
-                         for (i=[0.5:nb_rows]) {
-                              translate([0, -i*inter_switch, 0]) children();
-                         }
+module one_side_key_placement(side, nb_c, nb_r, nb_t) {
+     translate([side * hand_spacing/2,0,0]) rotate([0,0,side * hand_angle/2]) {
+          for (j=[0:nb_c-1]) {
+               translate([side*(j+0.5)*inter_switch, deltas[j], 0]) {
+                    for (i=[0.5:nb_r]) {
+                         translate([0, -i*inter_switch, 0]) children();
                     }
                }
-               translate([0, -(0.5+nb_rows)*inter_switch + deltas[0]])
-                    translate([s*inter_switch/2,-inter_switch/2,0])
-                    rotate([0,0,s*26.5])
-                    translate([-s*inter_switch/2,inter_switch/2,0])
-                    children();
-               for (j=[0:nb_thumbs-2]) {
-                    translate([s*(j+1)*inter_switch, -(0.5+nb_rows)*inter_switch + min(deltas[j], deltas[j+1])]) children();
-               }
           }
+          translate([0, -(0.5+nb_r)*inter_switch + deltas[0]])
+               translate([side*inter_switch/2,-inter_switch/2,0])
+               rotate([0,0,side*26.5])
+               translate([-side*inter_switch/2,inter_switch/2,0])
+               children();
+          for (j=[0:nb_t-2]) {
+               translate([side*(j+1)*inter_switch, -(0.5+nb_r)*inter_switch + min(deltas[j], deltas[j+1])]) children();
+          }
+     }
+}
+
+module key_placement() {
+     for (side=[-1,1]) {
+          one_side_key_placement(side, nb_cols, nb_rows, nb_thumbs) children();
+     }
+}
+
+module outline(border, r) {
+     base=15;
+     union() {
+          for (side=[-1,1]) {
+               hull() one_side_key_placement(side, nb_cols, nb_rows, nb_thumbs)
+                    rounded_square([base+border, base+border], r=r, center=true);
+          }
+          hull() for (side=[-1,1]) {
+               one_side_key_placement(side, nb_c=1, nb_r=nb_rows, nb_t=nb_thumbs)
+                    rounded_square([base+border, base+border], r=r, center=true);
+          }
+          translate([0, -20+top-case_border+border+1.2]) square([80, 40], center=true);
      }
 }
 
 module screw_placement() {
      pill_placement() {
           for (i=[-1,1]) {
-               translate([i*20,-6,-pill_depth]) children();
+               translate([i*18,-5,-pill_depth]) children();
           }
-          translate([0,-61,-pill_depth]) children();
+          if (center_screw) translate([0,-61,-pill_depth]) children();
      }
      for (s=[-1,1]) {
           translate([s * hand_spacing/2,0,0]) rotate([0,0,s*hand_angle/2]) {
                offset=3.5;
                translate([s*inter_switch*0.5-s*offset,-inter_switch*nb_rows-offset+deltas[0],0]) children();
-               translate([s*inter_switch*3.75,-inter_switch*(nb_rows+0.25)+deltas[3],0]) children();
-               translate([s*(inter_switch*4+offset),deltas[4]+offset,0]) rotate([0,0,-s*hand_angle/2]) children();
+               if (nb_cols >= 5) {
+                    translate([s*inter_switch*3.75,-inter_switch*(nb_rows+0.25)+deltas[3],0]) children();
+                    translate([s*(inter_switch*4+offset),deltas[4]+offset,0]) rotate([0,0,-s*hand_angle/2]) children();
+               }
           }
      }
 }
@@ -73,10 +96,7 @@ module pill_cube(epsilon=0) {
 module plate() {
      difference() {
           union() {
-               hull() {
-                    key_placement() translate([0,0,-thickness]) linear_extrude(thickness)
-                         rounded_square([22, 22], r=2, center=true);
-               }
+               translate([0,0,-thickness]) linear_extrude(thickness) outline(case_border, r=2);
                pill_cube();
           }
           key_placement() cube([switch_hole, switch_hole, 3*thickness], center=true);
@@ -91,12 +111,8 @@ module case() {
      difference() {
           union() {
                difference() {
-                    hull() {
-                         key_placement() translate([0,0,-9]) linear_extrude(9-thickness)
-                              rounded_square([22, 22], r=2, center=true);
-                    }
-                    hull() key_placement() translate([0,0,-8]) linear_extrude(8)
-                         square([switch_hole+0.5, switch_hole+0.5], center=true);
+                    translate([0,0,-9]) linear_extrude(9-thickness) outline(case_border, r=2);
+                    translate([0,0,-8]) linear_extrude(8) outline(0, r=0);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
