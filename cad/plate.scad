@@ -15,7 +15,9 @@ hand_spacing=20;
 hand_angle=30;
 center_screw=false;
 case_border=3.5;
+switch_depth=8;// 8 for MX, 5 for choc
 top=8;// might need some tweeks if you cange hand_angle or first delta
+top_wide=43;
 
 // insert hole, can be adjusted depending on the size of your insert
 // or if you use autotaping screws
@@ -59,7 +61,7 @@ module outline(border, r) {
                one_side_key_placement(side, nb_c=1, nb_r=nb_rows, nb_t=nb_thumbs)
                     rounded_square([base+border*2, base+border*2], r=r, center=true);
           }
-          translate([0, -20+top-case_border+border+1.2]) square([80, 40], center=true);
+          translate([0, -20+top-case_border+border+1.2]) rounded_square([top_wide+border*2, 40], center=true, r=r);
      }
 }
 
@@ -110,16 +112,17 @@ module plate() {
 module case() {
      difference() {
           union() {
+               case_depth=switch_depth+1;
                difference() {
-                    translate([0,0,-9]) linear_extrude(9-thickness) outline(case_border, r=2);
-                    translate([0,0,-8]) linear_extrude(8) outline(0, r=0);
+                    translate([0,0,-case_depth]) linear_extrude(case_depth-thickness) outline(case_border, r=2);
+                    translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(0, r=0);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
-               pill_placement() translate([0,-0.1-45/2,-pill_depth-9+(9+pill_depth)/2])
-                    cube([10,45,9+pill_depth], center=true);
+               pill_placement() translate([0,-0.1-45/2,-pill_depth-case_depth+(case_depth+pill_depth)/2])
+                    cube([10,45,case_depth+pill_depth], center=true);
                screw_placement() {
-                    translate([0,0,-8]) cylinder(d=8.8, h=8-thickness);
+                    translate([0,0,-switch_depth]) cylinder(d=8.8, h=switch_depth-thickness);
                }
           }
           // screw holes
@@ -141,6 +144,6 @@ color([1,1,1,0.8]) key_placement() switch();
 color([0.9,0.9,0.9]) key_placement() keycap();
 color([0.7,0.7,0.7]) screw_placement() {
      cylinder(d=5.3, h=1.3);
-     translate([0,0,-6]) cylinder(d=2.7, h=6);
+     translate([0,0,-4]) cylinder(d=2.7, h=4);
 }
 pill_placement() usb_c_pill();
