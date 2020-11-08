@@ -7,7 +7,7 @@ use panic_halt as _;
 use core::convert::Infallible;
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 use generic_array::typenum::{U13, U5};
-use keyberon::action::{k, l, m, Action, Action::*};
+use keyberon::action::{k, l, m, Action, Action::*, HoldTapConfig};
 use keyberon::debounce::Debouncer;
 use keyberon::impl_heterogenous_array;
 use keyberon::key_code::KbHidReport;
@@ -65,12 +65,14 @@ const CUT: Action = m(&[LShift, Delete]);
 const COPY: Action = m(&[LCtrl, Insert]);
 const PASTE: Action = m(&[LShift, Insert]);
 const L2_ENTER: Action = HoldTap {
-    timeout: 140,
+    timeout: 200,
+    config: HoldTapConfig::HoldOnOtherKeyPress,
     hold: &l(2),
     tap: &k(Enter),
 };
 const L1_SP: Action = HoldTap {
     timeout: 200,
+    config: HoldTapConfig::PermissiveHold,
     hold: &l(1),
     tap: &k(Space),
 };
@@ -232,7 +234,7 @@ const APP: () = {
             .debouncer
             .events(c.resources.matrix.get().unwrap())
         {
-            send_report(c.resources.layout.event(event), &mut c.resources.usb_class);
+            c.resources.layout.event(event);
         }
         send_report(c.resources.layout.tick(), &mut c.resources.usb_class);
     }
