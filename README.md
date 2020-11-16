@@ -3,7 +3,15 @@
 A handwired unsplitted ergo keyboard. It uses
 [keyberon](https://github.com/TeXitoi/keyberon) for its firmware.
 
+The case is totally parametric: you can customize a lot of things, including:
+ - number of rows
+ - number of columns
+ - number of thumb keys
+ - angle between the two halves
+
 ![Keyberon 56](images/keyberon-56.jpg)
+
+![Keyberon 44](images/keyberon-44.jpg)
 
 ## Bill of Materials
 
