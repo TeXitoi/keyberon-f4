@@ -8,6 +8,7 @@ The case is totally parametric: you can customize a lot of things, including:
  - number of columns
  - number of thumb keys
  - angle between the two halves
+ - column stagger
 
 ![Keyberon 56](images/keyberon-56.jpg)
 
@@ -15,20 +16,36 @@ The case is totally parametric: you can customize a lot of things, including:
 
 ## Bill of Materials
 
- - a [stm32f401 developement
-   board](https://www.aliexpress.com/item/4000069263843.html)
+ - a [WeAct MiniF4 development board](https://www.aliexpress.com/item/4000346695587.html)
  - a 3D printed [plate](cad/plate.stl)
  - a 3D printed [case](cad/case.stl)
- - 56 Cherry MX compatible keyboard switches
- - 56 Cherry MX compatible 1U keycaps
- - 56 1N4148 diodes
- - Polyurethane Enameled Copper Wire 0.2mm
- - 9 4mm M3 screws
- - 9 3mm M3 brass inserts
- - a USB-C cable
- - a soldering kit
+ - 44 [Cherry MX compatible keyboard
+   switches](https://www.aliexpress.com/item/32840007937.html) (for
+   the default parameters)
+ - 44 [Cherry MX compatible 1U
+   keycaps](https://www.aliexpress.com/item/32850729893.html) (for the
+   default parameters)
+ - 44 [1N4148 diodes](https://www.aliexpress.com/item/32660088529.html)
+   (for the default parameters)
+ - [Polyurethane Enameled Copper Wire 0.2mm](https://www.aliexpress.com/item/32957551556.html)
+ - 8 [4mm M3 screws](https://www.aliexpress.com/item/32948746653.html)
+   (or 9 if you opt for center screw in the parameters)
+ - 8 [3mm M3 brass inserts](https://www.aliexpress.com/item/32958273559.html)
+   (or 9 if you opt for center screw in the parameters)
+ - a [USB-C cable](https://www.aliexpress.com/item/4000624424432.html)
+ - a [soldering kit](https://www.aliexpress.com/item/4000019437594.html)
 
-Everything can be found for less than $60 new on Aliexpress.
+Everything can be found for less than $60 new on Aliexpress without
+the case.
+
+## Building
+
+You can follow the [building guide of keyberon
+grid](https://github.com/TeXitoi/keyberon-grid/blob/master/BUILDING.md)
+or any other handwiring guide. I recommand to read a few to have
+different visions.
+
+For the wiring of the dev board, refer to the source code for the pins.
 
 ## Compiling
 
