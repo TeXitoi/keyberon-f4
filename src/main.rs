@@ -61,22 +61,24 @@ impl_heterogenous_array! {
     [0, 1, 2, 3, 4]
 }
 
-const CUT: Action = m(&[LShift, Delete]);
-const COPY: Action = m(&[LCtrl, Insert]);
-const PASTE: Action = m(&[LShift, Insert]);
-const L2_ENTER: Action = HoldTap {
+const CUT: Action<()> = m(&[LShift, Delete]);
+const COPY: Action<()> = m(&[LCtrl, Insert]);
+const PASTE: Action<()> = m(&[LShift, Insert]);
+const L2_ENTER: Action<()> = HoldTap {
     timeout: 200,
     config: HoldTapConfig::HoldOnOtherKeyPress,
+    tap_hold_interval: 0,
     hold: &l(2),
     tap: &k(Enter),
 };
-const L1_SP: Action = HoldTap {
+const L1_SP: Action<()> = HoldTap {
     timeout: 200,
-    config: HoldTapConfig::PermissiveHold,
+    config: HoldTapConfig::Default,
+    tap_hold_interval: 0,
     hold: &l(1),
     tap: &k(Space),
 };
-const CSPACE: Action = m(&[LCtrl, Space]);
+const CSPACE: Action<()> = m(&[LCtrl, Space]);
 macro_rules! s {
     ($k:ident) => {
         m(&[LShift, $k])
@@ -92,7 +94,7 @@ macro_rules! a {
 // thus all the column is activated when the button is pushed. Because
 // of that, only one action is defined in the 13th column.
 #[rustfmt::skip]
-pub static LAYERS: keyberon::layout::Layers = &[
+pub static LAYERS: keyberon::layout::Layers<()> = &[
     &[
         &[k(Grave),  k(Kb1),k(Kb2),k(Kb3),  k(Kb4),k(Kb5), k(Kb6),   k(Kb7),  k(Kb8), k(Kb9),  k(Kb0),   k(Minus),  k(Space)],
         &[k(Tab),     k(Q), k(W),  k(E),    k(R), k(T),    k(Y),     k(U),    k(I),   k(O),    k(P),     k(LBracket)],
@@ -115,7 +117,7 @@ pub static LAYERS: keyberon::layout::Layers = &[
         &[Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans, Trans, Trans ],
         &[k(F1),k(F2),k(F3),k(F4),k(F5),k(F6),k(F7),k(F8),k(F9),k(F10),k(F11),k(F12)],
         &[Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans, Trans, Trans ],
-        &[Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans, Trans, Trans ],
+        &[Action::Custom(()),Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans, Trans, Trans ],
         &[Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans,Trans, Trans, Trans ],
     ],
 ];
@@ -140,7 +142,7 @@ const APP: () = {
         usb_class: UsbClass,
         matrix: Matrix<Cols, Rows>,
         debouncer: Debouncer<PressedKeys<U5, U13>>,
-        layout: Layout,
+        layout: Layout<()>,
         timer: timer::Timer<stm32::TIM3>,
     }
 
@@ -236,7 +238,11 @@ const APP: () = {
         {
             c.resources.layout.event(event);
         }
-        send_report(c.resources.layout.tick(), &mut c.resources.usb_class);
+        match c.resources.layout.tick() {
+            keyberon::layout::CustomEvent::Release(()) => cortex_m::peripheral::SCB::sys_reset(),
+            _ => (),
+        }
+        send_report(c.resources.layout.keycodes(), &mut c.resources.usb_class);
     }
 };
 
