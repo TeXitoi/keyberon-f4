@@ -79,6 +79,29 @@ const L1_SP: Action<()> = HoldTap {
     tap: &k(Space),
 };
 const CSPACE: Action<()> = m(&[LCtrl, Space]);
+
+const SHIFT_ESC: Action<()> = HoldTap {
+    timeout: 200,
+    tap_hold_interval: 0,
+    config: HoldTapConfig::Default,
+    hold: &k(LShift),
+    tap: &k(Escape),
+};
+const CTRL_INS: Action<()> = HoldTap {
+    timeout: 200,
+    tap_hold_interval: 0,
+    config: HoldTapConfig::Default,
+    hold: &k(LCtrl),
+    tap: &k(Insert),
+};
+const ALT_NL: Action<()> = HoldTap {
+    timeout: 200,
+    tap_hold_interval: 0,
+    config: HoldTapConfig::Default,
+    hold: &k(LAlt),
+    tap: &k(NumLock),
+};
+
 macro_rules! s {
     ($k:ident) => {
         m(&[LShift, $k])
@@ -102,11 +125,11 @@ pub static LAYERS: keyberon::layout::Layers<()> = &[
         &[k(Equal),   k(Z), k(X),  k(C),    k(V), k(B),    k(N),     k(M),    k(Comma),k(Dot), k(Slash), k(Bslash)  ],
         &[Trans,      Trans,k(LGui),k(LAlt),L1_SP,k(LCtrl),k(RShift),L2_ENTER,k(RAlt),k(BSpace),Trans,   Trans      ],
     ], &[
-        &[k(F1),         k(F2),   k(F3),     k(F4),     k(F5),    k(F6),k(F7),      k(F8),  k(F9),    k(F10), k(F11),  k(F12)],
-        &[Trans,         k(Pause),Trans,     k(PScreen),Trans,    Trans,Trans,      Trans,  k(Delete),Trans,  Trans,   Trans ],
-        &[Trans,         Trans,   k(NumLock),k(Insert), k(Escape),Trans,k(CapsLock),k(Left),k(Down),  k(Up),  k(Right),Trans ],
-        &[k(NonUsBslash),k(Undo), CUT,       COPY,      PASTE,    Trans,Trans,      k(Home),k(PgDown),k(PgUp),k(End),  Trans ],
-        &[Trans,         Trans,   Trans,     Trans,     Trans,    Trans,Trans,      Trans,  Trans,    Trans,  Trans,   Trans ],
+        &[k(F1),         k(F2),   k(F3), k(F4),     k(F5),    k(F6),k(F7),      k(F8),    k(F9),    k(F10), k(F11),  k(F12)],
+        &[Trans,         k(Pause),Trans, k(PScreen),Trans,    Trans,Trans,      k(BSpace),k(Delete),Trans,  Trans,   Trans ],
+        &[Trans,         Trans,   ALT_NL,CTRL_INS,  SHIFT_ESC,Trans,k(CapsLock),k(Left),  k(Down),  k(Up),  k(Right),Trans ],
+        &[k(NonUsBslash),k(Undo), CUT,   COPY,      PASTE,    Trans,Trans,      k(Home),  k(PgDown),k(PgUp),k(End),  Trans ],
+        &[Trans,         Trans,   Trans, Trans,     Trans,    Trans,Trans,      Trans,    Trans,    Trans,  Trans,   Trans ],
     ], &[
         &[Trans,    Trans,  Trans,  Trans,  Trans,  Trans,  Trans,  Trans,  Trans,  Trans,  Trans,  Trans    ],
         &[s!(Grave),s!(Kb1),s!(Kb2),s!(Kb3),s!(Kb4),s!(Kb5),s!(Kb6),s!(Kb7),s!(Kb8),s!(Kb9),s!(Kb0),s!(Minus)],
