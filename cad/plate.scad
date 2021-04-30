@@ -3,7 +3,7 @@ use <usb-c-pill.scad>
 use <key.scad>
 include <printing.scad>
 
-switch_hole=14.1;// by spec should be 14, can be adjusted for printer imprecision
+switch_hole=13.9;// by spec should be 14, can be adjusted for printer imprecision
 inter_switch=19.05;
 thickness=1.6;// plate thinkness
 d=2.54;

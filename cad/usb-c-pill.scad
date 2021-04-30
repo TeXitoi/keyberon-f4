@@ -8,7 +8,7 @@ e=0.1;
 button_height=2+thickness;
 
 module buttons() {
-     for (coord=[[2.4,-15,0], [-2.4,-15,0], [-2,-40.5,0]]) {
+     for (coord=[[2.4,-15,0], [-2.4,-15,0], [-2,-41,0]]) {
           translate(coord) translate([0,-e,button_height]) {
                children();
           }
