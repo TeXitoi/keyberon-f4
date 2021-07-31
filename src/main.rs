@@ -4,18 +4,14 @@
 // set the panic handler
 use panic_halt as _;
 
-use core::convert::Infallible;
-use embedded_hal::digital::v2::{InputPin, OutputPin};
-use generic_array::typenum::{U13, U5};
 use keyberon::action::{k, l, m, Action, Action::*, HoldTapConfig};
 use keyberon::debounce::Debouncer;
-use keyberon::impl_heterogenous_array;
 use keyberon::key_code::KbHidReport;
 use keyberon::key_code::KeyCode::{self, *};
 use keyberon::layout::Layout;
 use keyberon::matrix::{Matrix, PressedKeys};
 use rtic::app;
-use stm32f4xx_hal::gpio::{self, gpioa, gpiob, Input, Output, PullUp, PushPull};
+use stm32f4xx_hal::gpio::{self, EPin, Input, Output, PullUp, PushPull};
 use stm32f4xx_hal::otg_fs::{UsbBusType, USB};
 use stm32f4xx_hal::prelude::*;
 use stm32f4xx_hal::{stm32, timer};
@@ -24,42 +20,6 @@ use usb_device::class::UsbClass as _;
 
 type UsbClass = keyberon::Class<'static, UsbBusType, Leds>;
 type UsbDevice = usb_device::device::UsbDevice<'static, UsbBusType>;
-
-pub struct Cols(
-    gpiob::PB14<Input<PullUp>>,
-    gpiob::PB15<Input<PullUp>>,
-    gpiob::PB5<Input<PullUp>>,
-    gpiob::PB6<Input<PullUp>>,
-    gpiob::PB7<Input<PullUp>>,
-    gpiob::PB8<Input<PullUp>>,
-    gpioa::PA5<Input<PullUp>>,
-    gpioa::PA6<Input<PullUp>>,
-    gpioa::PA7<Input<PullUp>>,
-    gpiob::PB0<Input<PullUp>>,
-    gpiob::PB1<Input<PullUp>>,
-    gpiob::PB10<Input<PullUp>>,
-    gpioa::PA0<Input<PullUp>>,
-);
-impl_heterogenous_array! {
-    Cols,
-    dyn InputPin<Error = Infallible>,
-    U13,
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-}
-
-pub struct Rows(
-    gpioa::PA4<Output<PushPull>>,
-    gpioa::PA3<Output<PushPull>>,
-    gpioa::PA2<Output<PushPull>>,
-    gpioa::PA1<Output<PushPull>>,
-    gpiob::PB9<Output<PushPull>>,
-);
-impl_heterogenous_array! {
-    Rows,
-    dyn OutputPin<Error = Infallible>,
-    U5,
-    [0, 1, 2, 3, 4]
-}
 
 const CUT: Action<()> = m(&[LShift, Delete]);
 const COPY: Action<()> = m(&[LCtrl, Insert]);
@@ -151,9 +111,9 @@ pub struct Leds {
 impl keyberon::keyboard::Leds for Leds {
     fn caps_lock(&mut self, status: bool) {
         if status {
-            self.caps_lock.set_low().unwrap()
+            self.caps_lock.set_low()
         } else {
-            self.caps_lock.set_high().unwrap()
+            self.caps_lock.set_high()
         }
     }
 }
@@ -163,10 +123,10 @@ const APP: () = {
     struct Resources {
         usb_dev: UsbDevice,
         usb_class: UsbClass,
-        matrix: Matrix<Cols, Rows>,
-        debouncer: Debouncer<PressedKeys<U5, U13>>,
+        matrix: Matrix<EPin<Input<PullUp>>, EPin<Output<PushPull>>, 13, 5>,
+        debouncer: Debouncer<PressedKeys<13, 5>>,
         layout: Layout<()>,
-        timer: timer::Timer<stm32::TIM3>,
+        timer: timer::CountDownTimer<stm32::TIM3>,
     }
 
     #[init]
@@ -186,15 +146,16 @@ const APP: () = {
         let gpioc = c.device.GPIOC.split();
 
         let mut led = gpioc.pc13.into_push_pull_output();
-        led.set_low().unwrap();
+        led.set_low();
         let leds = Leds { caps_lock: led };
 
         let usb = USB {
             usb_global: c.device.OTG_FS_GLOBAL,
             usb_device: c.device.OTG_FS_DEVICE,
             usb_pwrclk: c.device.OTG_FS_PWRCLK,
-            pin_dm: gpioa.pa11.into_alternate_af10(),
-            pin_dp: gpioa.pa12.into_alternate_af10(),
+            pin_dm: gpioa.pa11.into_alternate(),
+            pin_dp: gpioa.pa12.into_alternate(),
+            hclk: clocks.hclk(),
         };
         *USB_BUS = Some(UsbBusType::new(usb, EP_MEMORY));
         let usb_bus = USB_BUS.as_ref().unwrap();
@@ -202,32 +163,32 @@ const APP: () = {
         let usb_class = keyberon::new_class(usb_bus, leds);
         let usb_dev = keyberon::new_device(usb_bus);
 
-        let mut timer = timer::Timer::tim3(c.device.TIM3, 1.khz(), clocks);
+        let mut timer = timer::Timer::new(c.device.TIM3, &clocks).start_count_down(1.khz());
         timer.listen(timer::Event::TimeOut);
 
         let matrix = Matrix::new(
-            Cols(
-                gpiob.pb14.into_pull_up_input(),
-                gpiob.pb15.into_pull_up_input(),
-                gpiob.pb5.into_pull_up_input(),
-                gpiob.pb6.into_pull_up_input(),
-                gpiob.pb7.into_pull_up_input(),
-                gpiob.pb8.into_pull_up_input(),
-                gpioa.pa5.into_pull_up_input(),
-                gpioa.pa6.into_pull_up_input(),
-                gpioa.pa7.into_pull_up_input(),
-                gpiob.pb0.into_pull_up_input(),
-                gpiob.pb1.into_pull_up_input(),
-                gpiob.pb10.into_pull_up_input(),
-                gpioa.pa0.into_pull_up_input(),
-            ),
-            Rows(
-                gpioa.pa4.into_push_pull_output(),
-                gpioa.pa3.into_push_pull_output(),
-                gpioa.pa2.into_push_pull_output(),
-                gpioa.pa1.into_push_pull_output(),
-                gpiob.pb9.into_push_pull_output(),
-            ),
+            [
+                gpiob.pb14.into_pull_up_input().erase(),
+                gpiob.pb15.into_pull_up_input().erase(),
+                gpiob.pb5.into_pull_up_input().erase(),
+                gpiob.pb6.into_pull_up_input().erase(),
+                gpiob.pb7.into_pull_up_input().erase(),
+                gpiob.pb8.into_pull_up_input().erase(),
+                gpioa.pa5.into_pull_up_input().erase(),
+                gpioa.pa6.into_pull_up_input().erase(),
+                gpioa.pa7.into_pull_up_input().erase(),
+                gpiob.pb0.into_pull_up_input().erase(),
+                gpiob.pb1.into_pull_up_input().erase(),
+                gpiob.pb10.into_pull_up_input().erase(),
+                gpioa.pa0.into_pull_up_input().erase(),
+            ],
+            [
+                gpioa.pa4.into_push_pull_output().erase(),
+                gpioa.pa3.into_push_pull_output().erase(),
+                gpioa.pa2.into_push_pull_output().erase(),
+                gpioa.pa1.into_push_pull_output().erase(),
+                gpiob.pb9.into_push_pull_output().erase(),
+            ],
         );
 
         init::LateResources {
