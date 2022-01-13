@@ -16,7 +16,7 @@ The case is totally parametric: you can customize a lot of things, including:
 
 ## Bill of Materials
 
- - a [WeAct MiniF4 development board](https://www.aliexpress.com/item/4000346695587.html)
+ - a [WeAct MiniF4 development board](https://www.aliexpress.com/item/1005001456186625.html)
  - a 3D printed [plate](cad/plate.stl)
  - a 3D printed [case](cad/case.stl)
  - 44 [Cherry MX compatible keyboard
