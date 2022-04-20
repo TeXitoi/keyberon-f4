@@ -8,7 +8,7 @@ use keyberon::debounce::Debouncer;
 use keyberon::key_code::KbHidReport;
 use keyberon::key_code::KeyCode;
 use keyberon::layout::Layout;
-use keyberon::matrix::{Matrix, PressedKeys};
+use keyberon::matrix::Matrix;
 use rtic::app;
 use stm32f4xx_hal::gpio::{self, EPin, Input, Output, PullUp, PushPull};
 use stm32f4xx_hal::otg_fs::{UsbBusType, USB};
@@ -41,8 +41,8 @@ const APP: () = {
         usb_dev: UsbDevice,
         usb_class: UsbClass,
         matrix: Matrix<EPin<Input<PullUp>>, EPin<Output<PushPull>>, 13, 4>,
-        debouncer: Debouncer<PressedKeys<13, 4>>,
-        layout: Layout<()>,
+        debouncer: Debouncer<[[bool; 13]; 4]>,
+        layout: Layout<12, 4, 4, ()>,
         timer: timer::CountDownTimer<pac::TIM3>,
     }
 
@@ -111,9 +111,9 @@ const APP: () = {
             usb_dev,
             usb_class,
             timer,
-            debouncer: Debouncer::new(PressedKeys::default(), PressedKeys::default(), 5),
+            debouncer: Debouncer::new([[false; 13]; 4], [[false; 13]; 4], 5),
             matrix: matrix.unwrap(),
-            layout: Layout::new(crate::layout::LAYERS),
+            layout: Layout::new(&crate::layout::LAYERS),
         }
     }
 
