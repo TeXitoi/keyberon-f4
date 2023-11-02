@@ -70,7 +70,11 @@ mod app {
         let leds = Leds { caps_lock: led };
 
         let usb = USB::new(
-            (c.device.OTG_FS_GLOBAL, c.device.OTG_FS_DEVICE, c.device.OTG_FS_PWRCLK),
+            (
+                c.device.OTG_FS_GLOBAL,
+                c.device.OTG_FS_DEVICE,
+                c.device.OTG_FS_PWRCLK,
+            ),
             (gpioa.pa11, gpioa.pa12),
             &clocks,
         );
@@ -123,9 +127,9 @@ mod app {
     #[task(binds = OTG_FS, priority = 2, shared = [usb_dev, usb_class])]
     fn usb_tx(c: usb_tx::Context) {
         (c.shared.usb_dev, c.shared.usb_class).lock(|usb_dev, usb_class| {
-             if usb_dev.poll(&mut [usb_class]) {
-                 usb_class.poll();
-             }
+            if usb_dev.poll(&mut [usb_class]) {
+                usb_class.poll();
+            }
         })
     }
 
@@ -133,11 +137,7 @@ mod app {
     fn tick(mut c: tick::Context) {
         c.local.timer.clear_interrupt(timer::Event::Update);
 
-        for event in c
-            .local
-            .debouncer
-            .events(c.local.matrix.get().unwrap())
-        {
+        for event in c.local.debouncer.events(c.local.matrix.get().unwrap()) {
             c.local.layout.event(event);
         }
         match c.local.layout.tick() {
@@ -148,7 +148,10 @@ mod app {
         }
 
         let report: KbHidReport = c.local.layout.keycodes().collect();
-        if c.shared.usb_class.lock(|k| k.device_mut().set_keyboard_report(report.clone())) {
+        if c.shared
+            .usb_class
+            .lock(|k| k.device_mut().set_keyboard_report(report.clone()))
+        {
             while let Ok(0) = c.shared.usb_class.lock(|k| k.write(report.as_bytes())) {}
         }
     }
