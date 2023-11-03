@@ -9,7 +9,7 @@ stm32f4xx-hal = { version = "0.17.0", features = ["rt", "stm32f401", "usb_fs"] }
 cortex-m = "0.7"
 cortex-m-rt = { version = "0.7", features = ["device"] }
 panic-halt = "0.2.0"
-keyberon = { git = "https://github.com/TeXitoi/keyberon", rev = "8a00b85b" }
+keyberon = { git = "https://github.com/TeXitoi/keyberon" }
 cortex-m-rtic = "1"
 usb-device = "0.2.0"
 
