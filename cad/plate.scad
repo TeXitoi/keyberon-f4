@@ -14,9 +14,9 @@ nb_thumbs=4;
 hand_spacing=20;
 hand_angle=30;
 center_screw=false;
-case_border=3.5;
+case_border=5;
 switch_depth=8;// 8 for MX, 5 for choc
-top=8;// might need some tweeks if you cange hand_angle or first delta
+top=9;// might need some tweeks if you cange hand_angle or first delta
 top_wide=43;
 
 // insert hole, can be adjusted depending on the size of your insert
@@ -98,13 +98,24 @@ module pill_cube(epsilon=0) {
 module plate() {
      difference() {
           union() {
-               translate([0,0,-thickness]) linear_extrude(thickness) outline(case_border, r=2);
-               pill_cube();
+              difference() {
+                  translate([0,0,-5]) linear_extrude(5) outline(case_border, r=2);
+                  translate([0, 0, -5-thickness]) linear_extrude(5) difference() {
+                      outline(case_border+1, r=2);
+                      outline(-0.5, r=2);
+                  }
+              }
+              pill_cube();
           }
-          key_placement() cube([switch_hole, switch_hole, 3*thickness], center=true);
+          key_placement() {
+              cube([switch_hole, switch_hole, 3*switch_depth], center=true);
+              translate([0, 0, -thickness-switch_depth])
+                  cube([switch_hole+1, switch_hole+1, 2*switch_depth], center=true);
+          }
           pill_placement() usb_c_pill_pocket();
-          screw_placement() translate([0,0,-2]) {
-               cylinder(d=4, h=thickness*3, center=true);
+          screw_placement() translate([0,0,-thickness-switch_depth]) {
+               cylinder(d=4, h=switch_depth*3, center=true);
+               cylinder(d=10, h=switch_depth);
           }
      }
 }

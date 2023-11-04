@@ -51,7 +51,7 @@ module usb_c_pill() {
 
 module usb_c_pill_pocket() {
      translate([0,-height/2-e,-e]) {
-          linear_extrude(e+thickness) square([width+2*e, height+2*e], center=true);
+         translate([0, 0, -10]) linear_extrude(e+thickness+10) square([width+2*e, height+2*e], center=true);
           linear_extrude(e+button_height) square([width-2, height+2*e], center=true);
      }
      buttons() {
