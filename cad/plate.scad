@@ -3,7 +3,7 @@ use <usb-c-pill.scad>
 use <key.scad>
 include <printing.scad>
 
-switch_hole=13.9;// by spec should be 14, can be adjusted for printer imprecision
+switch_hole=14;// by spec should be 14, can be adjusted for printer imprecision
 inter_switch=19.05;
 thickness=1.6;// plate thinkness
 d=2.54;
@@ -99,10 +99,9 @@ module plate() {
      difference() {
           union() {
               difference() {
-                  translate([0,0,-5]) linear_extrude(5) outline(case_border, r=2);
-                  translate([0, 0, -5-thickness]) linear_extrude(5) difference() {
-                      outline(case_border+1, r=2);
-                      outline(-0.5, r=2);
+                  translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(case_border, r=2);
+                  translate([0, 0, -5-switch_depth]) linear_extrude(switch_depth) {
+                      outline(0, r=0);
                   }
               }
               pill_cube();
@@ -125,8 +124,7 @@ module case() {
           union() {
                case_depth=switch_depth+1;
                difference() {
-                    translate([0,0,-case_depth]) linear_extrude(case_depth-thickness) outline(case_border, r=2);
-                    translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(0, r=0);
+                    translate([0,0,-case_depth]) linear_extrude(1) outline(case_border, r=2);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
@@ -143,13 +141,9 @@ module case() {
      }
 }
 
-color([0.3,0.3,0.3]) {
-     //intersection() {
-          //cube([75,100,30], center=true);
-          plate();
-          case();
-     //}
-}
+color([0.3,0.3,0.3]) plate();
+color([0.4,0.4,0.4]) case();
+
 
 color([1,1,1,0.8]) key_placement() switch();
 color([0.9,0.9,0.9]) key_placement() keycap();
