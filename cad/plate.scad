@@ -122,14 +122,15 @@ module plate() {
 module case() {
      difference() {
           union() {
-               case_depth=switch_depth+1;
+               case_thichness=1.6;
+               case_depth=switch_depth+case_thichness;
                difference() {
-                    translate([0,0,-case_depth]) linear_extrude(1) outline(case_border, r=2);
+                    translate([0,0,-case_depth]) linear_extrude(case_thichness) outline(case_border, r=2);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
                pill_placement() translate([0,-0.1-45/2,-pill_depth-case_depth+(case_depth+pill_depth)/2])
-                    cube([10,45,case_depth+pill_depth], center=true);
+                    cube([10,45,case_depth+pill_depth-0.8], center=true);
                screw_placement() {
                     translate([0,0,-switch_depth]) cylinder(d=8.8, h=switch_depth-thickness);
                }
