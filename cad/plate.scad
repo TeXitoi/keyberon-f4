@@ -130,7 +130,7 @@ module case() {
                     pill_cube(epsilon=0.2);
                }
                pill_placement() translate([0,-0.1-45/2,-pill_depth-case_depth+(case_depth+pill_depth)/2])
-                    cube([10,45,case_depth+pill_depth-0.8], center=true);
+                    cube([10,45,case_depth+pill_depth-0.4], center=true);
                screw_placement() {
                     translate([0,0,-switch_depth]) cylinder(d=8.8, h=switch_depth-thickness);
                }
