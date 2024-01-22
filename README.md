@@ -23,11 +23,11 @@ The case is totally parametric: you can customize a lot of things, including:
    switches](https://www.aliexpress.com/item/32840007937.html) (for
    the default parameters)
  - 44 [Cherry MX compatible 1U
-   keycaps](https://www.aliexpress.com/item/32850729893.html) (for the
+   keycaps](https://www.aliexpress.com/item/32830177884.html) (for the
    default parameters)
  - 44 [1N4148 diodes](https://www.aliexpress.com/item/32660088529.html)
    (for the default parameters)
- - [Polyurethane Enameled Copper Wire 0.2mm](https://www.aliexpress.com/item/32957551556.html)
+ - [Polyurethane Enameled Copper Wire 0.2mm](https://www.aliexpress.com/item/1005003388771247.html)
  - 8 [4mm M3 screws](https://www.aliexpress.com/item/32948746653.html)
    (or 9 if you opt for center screw in the parameters)
  - 8 [3mm M3 brass inserts](https://www.aliexpress.com/item/32958273559.html)
