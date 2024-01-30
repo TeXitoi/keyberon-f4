@@ -1,5 +1,7 @@
 # Unsplitted ergo Keyberon [![Build status](https://travis-ci.org/TeXitoi/keyberon-f4.svg?branch=master)](https://travis-ci.org/TeXitoi/keyberon-f4)
 
+## Presentation
+
 A handwired unsplitted ergo keyboard. It uses
 [keyberon](https://github.com/TeXitoi/keyberon) for its firmware.
 
@@ -10,9 +12,49 @@ The case is totally parametric: you can customize a lot of things, including:
  - angle between the two halves
  - column stagger
 
+## Gallery
+
+### First version
+
 ![Keyberon 56](images/keyberon-56.jpg)
 
+### Second version
+
+The dev board has a dedicated cutout.
+
+6×3+4 layout with a bit more stagger.
+
 ![Keyberon 44](images/keyberon-44.jpg)
+
+### Third version
+
+The "plate" is now thick and play the role of case, with just a flat
+sheet for the back.
+
+Default version (6×3+4):
+
+![Keyberon v3](images/keyberon-f4-v3.jpg)
+
+Minimal version, for testing, with
+```
+nb_cols=2;
+nb_rows=2;
+nb_thumbs=2;
+```
+
+![Keyberon mini](images/keyberon-f4-2x2+2.jpg)
+
+Ferris like version, with
+```
+deltas=[-d,0,d,0,-5*d];// column stagger
+nb_cols=5;
+nb_rows=3;
+nb_thumbs=2;
+```
+
+![Keyberon ferris](images/keyberon-f4-ferris.png)
+
+
 
 ## Bill of Materials
 

@@ -147,7 +147,7 @@ color([0.4,0.4,0.4]) case();
 
 
 color([1,1,1,0.8]) key_placement() switch();
-color([0.9,0.9,0.9]) key_placement() keycap();
+color([1,1,1]) key_placement() keycap();
 color([0.7,0.7,0.7]) screw_placement() {
      cylinder(d=5.3, h=1.3);
      translate([0,0,-4]) cylinder(d=2.7, h=4);
