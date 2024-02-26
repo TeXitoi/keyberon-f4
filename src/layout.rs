@@ -15,7 +15,7 @@ const L1_SP: Action = HoldTap(&HoldTapAction {
     tap: k(Space),
 });
 const CSPACE: Action = m(&[LCtrl, Space].as_slice());
-
+const ALTGR_SHIFT: Action = m(&[RAlt, LShift].as_slice());
 const SHIFT_ESC: Action = HoldTap(&HoldTapAction {
     timeout: TIMEOUT,
     tap_hold_interval: 0,
@@ -47,8 +47,8 @@ pub static LAYERS: keyberon::layout::Layers<12, 4, 4, ()> = keyberon::layout::la
     {
         [Tab Q  W    E     R     T     Y    U  I   O P '[' ],
         [']' A  S    D     F     G     H    J  K   L ; '\''],
-        [ =  Z  X    C     V     B     N    M  ,   . / '\\'],
-        [ n  n LGui LAlt{L1_SP}LCtrl RShift(2)RAlt t n  n  ],
+        [ =  Z  X    C     V     B     N    M  ,   . / '\\'], 
+        [ n  n LGui LAlt{L1_SP}LCtrl RShift(2)RAlt {ALTGR_SHIFT} n n],
     }{
         [{Custom(())}Pause ScrollLock PScreen       t     t    t    BSpace Delete Space Tab t],
         [t           LGui     LAlt   {CTRL_INS}{SHIFT_ESC}t CapsLock Left   Down   Up Right t],
