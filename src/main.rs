@@ -135,7 +135,7 @@ mod app {
 
     #[task(binds = TIM3, priority = 1, shared = [usb_class], local = [matrix, debouncer, layout, timer])]
     fn tick(mut c: tick::Context) {
-        c.local.timer.clear_interrupt(timer::Event::Update);
+        c.local.timer.clear_flags(timer::Flag::Update);
 
         for event in c.local.debouncer.events(c.local.matrix.get().unwrap()) {
             c.local.layout.event(event);
