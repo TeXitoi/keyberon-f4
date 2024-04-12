@@ -16,7 +16,7 @@ deltas=[0,d,3*d,0,-6*d];// column stagger
 rotate_thumb_switch=false;
 aligned_thumbs=true;
 center_screw=true;
-center_screw_offset=(nb_rows+1)*inter_switch_y+8;
+center_screw_offset=(nb_rows+1)*inter_switch_y+9;
 
 hand_spacing=22;
 hand_angle=30;
