@@ -3,20 +3,22 @@ use <usb-c-pill.scad>
 use <key.scad>
 include <printing.scad>
 
-switch_hole=14;// by spec should be 14, can be adjusted for printer imprecision
-inter_switch=19.05;
+choc=true;
+switch_hole=choc?13.8:14;// can be adjusted for printer imprecision
+inter_switch_x=choc?18:19.05;
+inter_switch_y=choc?17:19.05;
 thickness=1.6;// plate thinkness
-d=2.54;
-deltas=[-d,0,d,0,-4*d,-5*d];// column stagger
-nb_cols=6;
+d=inter_switch_y/8;
+deltas=[0,d,3*d,0,-6*d];// column stagger
+nb_cols=5;
 nb_rows=3;
 nb_thumbs=4;
-hand_spacing=20;
+hand_spacing=22;
 hand_angle=30;
 center_screw=false;
 case_border=5;
-switch_depth=8;// 8 for MX, 5 for choc
-top=9;// might need some tweeks if you cange hand_angle or first delta
+switch_depth=choc?5:8;// 8 for MX, 5 for choc
+top=12;// might need some tweeks if you cange hand_angle or first delta
 top_wide=43;
 
 // insert hole, can be adjusted depending on the size of your insert
@@ -27,19 +29,19 @@ insert_height=4.6;
 module one_side_key_placement(side, nb_c, nb_r, nb_t) {
      translate([side * hand_spacing/2,0,0]) rotate([0,0,side * hand_angle/2]) {
           for (j=[0:nb_c-1]) {
-               translate([side*(j+0.5)*inter_switch, deltas[j], 0]) {
+               translate([side*(j+0.5)*inter_switch_x, deltas[j], 0]) {
                     for (i=[0.5:nb_r]) {
-                         translate([0, -i*inter_switch, 0]) children();
+                         translate([0, -i*inter_switch_y, 0]) children();
                     }
                }
           }
-          translate([0, -(0.5+nb_r)*inter_switch + deltas[0]])
-               translate([side*inter_switch/2,-inter_switch/2,0])
+          translate([0, -(0.5+nb_r)*inter_switch_y + deltas[0]])
+               translate([side*inter_switch_x/2,-inter_switch_y/2,0])
                rotate([0,0,side*26.5])
-               translate([-side*inter_switch/2,inter_switch/2,0])
+               translate([-side*inter_switch_x/2,inter_switch_y/2,0])
                children();
           for (j=[0:nb_t-2]) {
-               translate([side*(j+1)*inter_switch, -(0.5+nb_r)*inter_switch + min(deltas[j], deltas[j+1])]) children();
+               translate([side*(j+1)*inter_switch_x, -(0.5+nb_r)*inter_switch_y + min(deltas[j], deltas[j+1])]) children();
           }
      }
 }
@@ -75,10 +77,10 @@ module screw_placement() {
      for (s=[-1,1]) {
           translate([s * hand_spacing/2,0,0]) rotate([0,0,s*hand_angle/2]) {
                offset=3.5;
-               translate([s*inter_switch*0.5-s*offset,-inter_switch*nb_rows-offset+deltas[0],0]) children();
+               translate([s*inter_switch_x*0.5-s*offset,-inter_switch_y*nb_rows-offset+deltas[0],0]) children();
                if (nb_cols >= 5) {
-                    translate([s*inter_switch*3.75,-inter_switch*(nb_rows+0.25)+deltas[3],0]) children();
-                    translate([s*(inter_switch*4+offset),deltas[4]+offset,0]) rotate([0,0,-s*hand_angle/2]) children();
+                    translate([s*inter_switch_x*3.75,-inter_switch_y*(nb_rows+0.25)+deltas[3],0]) children();
+                    translate([s*(inter_switch_x*4+offset),deltas[4]+offset,0]) rotate([0,0,-s*hand_angle/2]) children();
                }
           }
      }
@@ -100,7 +102,7 @@ module plate() {
           union() {
               difference() {
                   translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(case_border, r=2);
-                  translate([0, 0, -5-switch_depth]) linear_extrude(switch_depth) {
+                  translate([0, 0, -(choc?2.2:5)-switch_depth]) linear_extrude(switch_depth) {
                       outline(0, r=0);
                   }
               }
@@ -146,8 +148,8 @@ color([0.3,0.3,0.3]) plate();
 color([0.4,0.4,0.4]) case();
 
 
-color([1,1,1,0.8]) key_placement() switch();
-color([1,1,1]) key_placement() keycap();
+color([1,1,1,0.8]) key_placement() switch(choc=choc);
+color([1,1,1]) key_placement() keycap(choc=choc);
 color([0.7,0.7,0.7]) screw_placement() {
      cylinder(d=5.3, h=1.3);
      translate([0,0,-4]) cylinder(d=2.7, h=4);
