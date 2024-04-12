@@ -4,21 +4,29 @@ use <key.scad>
 include <printing.scad>
 
 choc=true;
-switch_hole=choc?13.8:14;// can be adjusted for printer imprecision
-inter_switch_x=choc?18:19.05;
-inter_switch_y=choc?17:19.05;
-thickness=1.6;// plate thinkness
-d=inter_switch_y/8;
-deltas=[0,d,3*d,0,-6*d];// column stagger
+rotate_thumb_switch=false;
+aligned_thumbs=true;
+center_screw=true;
+center_screw_offset=75;
+
 nb_cols=5;
 nb_rows=3;
 nb_thumbs=4;
+
 hand_spacing=22;
 hand_angle=30;
-center_screw=false;
+
+top=12;// might need some tweeks if you cange hand_angle or first delta
+
+inter_switch_x=choc?18:19.05;
+inter_switch_y=choc?17:19.05;
+d=inter_switch_y/8;
+deltas=[0,d,3*d,0,-6*d];// column stagger
+
+switch_hole=choc?13.8:14;// can be adjusted for printer imprecision
+thickness=1.6;// plate thinkness
 case_border=5;
 switch_depth=choc?5:8;// 8 for MX, 5 for choc
-top=12;// might need some tweeks if you cange hand_angle or first delta
 top_wide=43;
 
 // insert hole, can be adjusted depending on the size of your insert
@@ -35,13 +43,15 @@ module one_side_key_placement(side, nb_c, nb_r, nb_t) {
                     }
                }
           }
-          translate([0, -(0.5+nb_r)*inter_switch_y + deltas[0]])
+          min_deltas=min([for (i=[0:nb_t-1]) deltas[i]]);
+          translate([0, -(0.5+nb_r)*inter_switch_y + (aligned_thumbs?min_deltas:deltas[0])])
                translate([side*inter_switch_x/2,-inter_switch_y/2,0])
-               rotate([0,0,side*26.5])
+               rotate([0,0,(rotate_thumb_switch?side:0)*26.5])
                translate([-side*inter_switch_x/2,inter_switch_y/2,0])
                children();
           for (j=[0:nb_t-2]) {
-               translate([side*(j+1)*inter_switch_x, -(0.5+nb_r)*inter_switch_y + min(deltas[j], deltas[j+1])]) children();
+              delta=aligned_thumbs?min_deltas:min(deltas[j], deltas[j+1]);
+              translate([side*(j+1)*inter_switch_x, -(0.5+nb_r)*inter_switch_y + delta]) children();
           }
      }
 }
@@ -72,12 +82,14 @@ module screw_placement() {
           for (i=[-1,1]) {
                translate([i*18,-5,-pill_depth]) children();
           }
-          if (center_screw) translate([0,-61,-pill_depth]) children();
+          if (center_screw) translate([0,-center_screw_offset,-pill_depth]) children();
      }
      for (s=[-1,1]) {
           translate([s * hand_spacing/2,0,0]) rotate([0,0,s*hand_angle/2]) {
                offset=3.5;
-               translate([s*inter_switch_x*0.5-s*offset,-inter_switch_y*nb_rows-offset+deltas[0],0]) children();
+               if (rotate_thumb_switch) {
+                  translate([s*inter_switch_x*0.5-s*offset,-inter_switch_y*nb_rows-offset+deltas[0],0]) children();
+               }
                if (nb_cols >= 5) {
                     translate([s*inter_switch_x*3.75,-inter_switch_y*(nb_rows+0.25)+deltas[3],0]) children();
                     translate([s*(inter_switch_x*4+offset),deltas[4]+offset,0]) rotate([0,0,-s*hand_angle/2]) children();
