@@ -3,25 +3,24 @@ use <usb-c-pill.scad>
 use <key.scad>
 include <printing.scad>
 
-choc=true;
-rotate_thumb_switch=false;
-aligned_thumbs=true;
-center_screw=true;
-center_screw_offset=75;
-
 nb_cols=5;
 nb_rows=3;
 nb_thumbs=4;
-
-hand_spacing=22;
-hand_angle=30;
-
-top=12;// might need some tweeks if you cange hand_angle or first delta
+choc=true;
 
 inter_switch_x=choc?18:19.05;
 inter_switch_y=choc?17:19.05;
 d=inter_switch_y/8;
 deltas=[0,d,3*d,0,-6*d];// column stagger
+
+rotate_thumb_switch=false;
+aligned_thumbs=true;
+center_screw=true;
+center_screw_offset=(nb_rows+1)*inter_switch_y+8;
+
+hand_spacing=22;
+hand_angle=30;
+top=12;// might need some tweeks if you cange hand_angle or first delta
 
 switch_hole=choc?13.8:14;// can be adjusted for printer imprecision
 thickness=1.6;// plate thinkness
@@ -123,7 +122,7 @@ module plate() {
           key_placement() {
               cube([switch_hole, switch_hole, 3*switch_depth], center=true);
               translate([0, 0, -thickness-switch_depth])
-                  cube([switch_hole+1, switch_hole+1, 2*switch_depth], center=true);
+                  cube([15, 15, 2*switch_depth], center=true);
           }
           pill_placement() usb_c_pill_pocket();
           screw_placement() translate([0,0,-thickness-switch_depth]) {
