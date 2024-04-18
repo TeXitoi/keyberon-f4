@@ -44,17 +44,11 @@ nb_thumbs=2;
 
 ![Keyberon mini](images/keyberon-f4-2x2+2.jpg)
 
-Ferris like version, with
-```
-deltas=[-d,0,d,0,-5*d];// column stagger
-nb_cols=5;
-nb_rows=3;
-nb_thumbs=2;
-```
+### Fourth version
 
-![Keyberon ferris](images/keyberon-f4-ferris.png)
+Choc height and spacing (optional), aligned thumb cluster (optional).
 
-
+![Keyberon v4](images/keyberon-f4-v4.jpg)
 
 ## Bill of Materials
 
