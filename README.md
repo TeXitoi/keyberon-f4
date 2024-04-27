@@ -50,6 +50,15 @@ Choc height and spacing (optional), aligned thumb cluster (optional).
 
 ![Keyberon v4](images/keyberon-f4-v4.jpg)
 
+Side view, with choc switches on the left, and MX switches on the
+right. 5 euro cent coin (21.25 mm of diameter) for scale.
+
+![Keyberon side view](images/keyberon-f4-side-view.jpg)
+
+I use this keyboard mostly over the laptop keyboard.
+
+![Keyberon over the laptop](images/keyberon-f4-v4-laptop.jpg)
+
 ## Bill of Materials
 
  - a [WeAct MiniF4 development board](https://www.aliexpress.com/item/1005001456186625.html)
