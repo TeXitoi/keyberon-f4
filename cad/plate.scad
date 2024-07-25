@@ -30,8 +30,7 @@ top_wide=43;
 
 // insert hole, can be adjusted depending on the size of your insert
 // or if you use autotaping screws
-insert_diameter=3.2;
-insert_height=4.6;
+insert_diameter=4;
 
 module one_side_key_placement(side, nb_c, nb_r, nb_t) {
      translate([side * hand_spacing/2,0,0]) rotate([0,0,side * hand_angle/2]) {
@@ -150,7 +149,7 @@ module case() {
           }
           // screw holes
           screw_placement() {
-               translate([0, 0, -thickness]) cylinder(d=4, h=4*2, center=true);
+               translate([0, 0, -thickness]) cylinder(d=insert_diameter, h=4*2, center=true);
           }
      }
 }
