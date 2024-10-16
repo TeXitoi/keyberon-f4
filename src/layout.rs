@@ -40,7 +40,6 @@ const M_9: Action = hold_tap!(k(LAlt), Kb9);
 const G_0: Action = hold_tap!(k(RGui), Kb0);
 
 const STAB: Action = m(&[LShift, Tab].as_slice());
-const AGS: Action = m(&[RAlt, LShift].as_slice());
 
 const COLON: Action = m(&[LShift, N].as_slice());
 const EQUAL: Action = m(&[RAlt, G].as_slice());
@@ -52,7 +51,7 @@ pub static LAYERS: keyberon::layout::Layers<12, 4, 4, ()> = keyberon::layout::la
         [Tab   Q       W       E       R       T       Y       U       I       O       P     '['],
         [']' {G_A}   {M_S}   {C_D}   {S_F}     G       H     {S_J}   {C_K}   {M_L}  {G_SC}  '\''],
         [=     Z       X       C       V       B       N       M       ,       .       /    '\\'],
-        [n     n       n       n     Space    (1)     (2)   RShift   RAlt    {AGS}     n       n],
+        [n     n       n       n     Space    (1)     (2)   RShift   RAlt      n       n       n],
     }{//[+· ···+··· ···+··· ···+··· ···+··· ···+···|···+··· ···+··· ···+··· ···+··· ···+··· ···+],
         [n Pause CapsLock ScrollLock PScreen {STAB}    n    BSpace  Delete  Insert     n       n],
         [n   LGui    LAlt   {C_ESC} LShift    Tab      n     Left    Down     Up     Right     n],
@@ -65,8 +64,8 @@ pub static LAYERS: keyberon::layout::Layers<12, 4, 4, ()> = keyberon::layout::la
         [n     n       t       t       t      (3)      n       t       t       t       n       n],
     }{//[+· ···+··· ···+··· ···+··· ···+··· ···+···|···+··· ···+··· ···+··· ···+··· ···+··· ···+],
         [n    F1      F2      F3      F4      F5      F6      F7      F8      F9      F10      n],
-        [n   LGui    LAlt    LCtrl  LShift     n       n    RShift   RCtrl   LAlt    RGui      n],
-        [n    F11     F12      n       n       n       n       n       n       n       n       n],
+        [n   LGui    LAlt    LCtrl  LShift    '['     ']'   RShift   RCtrl   LAlt    RGui      n],
+        [n    F11     F12      n      '`'      n       n     '\''    '\\'      -       =       n],
         [n     n       t  {Custom(())} t       n       n       t       t       t       n       n],
     } //[+· ···+··· ···+··· ···+··· ···+··· ···+···|···+··· ···+··· ···+··· ···+··· ···+··· ···+],
 };
