@@ -5,7 +5,7 @@ authors = ["Guillaume Pinot <texitoi@texitoi.eu>"]
 edition = "2018"
 
 [dependencies]
-stm32f4xx-hal = { version = "0.21.0", features = ["stm32f401", "usb_fs"] }
+stm32f4xx-hal = { version = "0.22.0", features = ["stm32f401", "usb_fs"] }
 cortex-m = "0.7"
 cortex-m-rt = { version = "0.7", features = ["device"] }
 panic-halt = "0.2.0"

@@ -9,7 +9,7 @@ use keyberon::key_code::KbHidReport;
 use keyberon::layout::Layout;
 use keyberon::matrix::Matrix;
 use rtic::app;
-use stm32f4xx_hal::gpio::{self, EPin, Input, Output, PushPull};
+use stm32f4xx_hal::gpio::{self, AnyPin, Input, Output, PushPull};
 use stm32f4xx_hal::otg_fs::{UsbBusType, USB};
 use stm32f4xx_hal::prelude::*;
 use stm32f4xx_hal::{pac, timer};
@@ -46,7 +46,7 @@ mod app {
 
     #[local]
     struct Local {
-        matrix: Matrix<EPin<Input>, EPin<Output<PushPull>>, 13, 4>,
+        matrix: Matrix<AnyPin<Input>, AnyPin<Output<PushPull>>, 13, 4>,
         debouncer: Debouncer<[[bool; 13]; 4]>,
         layout: Layout<12, 4, 4, ()>,
         timer: timer::CounterHz<pac::TIM3>,
