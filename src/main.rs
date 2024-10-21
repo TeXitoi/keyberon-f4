@@ -88,7 +88,7 @@ mod app {
         timer.start(1.kHz()).unwrap();
         timer.listen(timer::Event::Update);
 
-        let matrix = Matrix::new(
+        let Ok(matrix) = Matrix::new(
             [
                 gpiob.pb14.into_pull_up_input().erase(),
                 gpiob.pb15.into_pull_up_input().erase(),
@@ -117,7 +117,7 @@ mod app {
             Local {
                 timer,
                 debouncer: Debouncer::new([[false; 13]; 4], [[false; 13]; 4], 5),
-                matrix: matrix.unwrap(),
+                matrix: matrix,
                 layout: Layout::new(&crate::layout::LAYERS),
             },
             init::Monotonics(),
@@ -137,7 +137,8 @@ mod app {
     fn tick(mut c: tick::Context) {
         c.local.timer.clear_flags(timer::Flag::Update);
 
-        for event in c.local.debouncer.events(c.local.matrix.get().unwrap()) {
+        let Ok(matrix) = c.local.matrix.get();
+        for event in c.local.debouncer.events(matrix) {
             c.local.layout.event(event);
         }
         match c.local.layout.tick() {
