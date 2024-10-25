@@ -5,18 +5,18 @@ include <printing.scad>
 
 nb_cols=5;
 nb_rows=3;
-nb_thumbs=4;
+nb_thumbs=3;
 choc=true;
 
 inter_switch_x=choc?18:19.05;
 inter_switch_y=choc?17:19.05;
 d=inter_switch_y/8;
-deltas=[0,d,3*d,0,-6*d];// column stagger
+deltas=[0,2,6,2,-10];// column stagger
 
 rotate_thumb_switch=false;
-aligned_thumbs=true;
+aligned_thumbs=false;
 center_screw=true;
-center_screw_offset=(nb_rows+1)*inter_switch_y+9;
+center_screw_offset=(nb_rows+1)*inter_switch_y+7;
 
 hand_spacing=22;
 hand_angle=30;
@@ -24,9 +24,10 @@ top=12;// might need some tweeks if you cange hand_angle or first delta
 
 switch_hole=choc?13.8:14;// can be adjusted for printer imprecision
 thickness=1.6;// plate thinkness
-case_border=5;
+case_border=3;
+rounding=2;
 switch_depth=choc?5:8;// 8 for MX, 5 for choc
-top_wide=43;
+top_wide=51;
 
 // insert hole, can be adjusted depending on the size of your insert
 // or if you use autotaping screws
@@ -60,19 +61,20 @@ module key_placement() {
      }
 }
 
-module outline(border, r) {
-     base=15;
-     union() {
-          for (side=[-1,1]) {
-               hull() one_side_key_placement(side, nb_cols, nb_rows, nb_thumbs)
-                    rounded_square([base+border*2, base+border*2], r=r, center=true);
-          }
-          hull() for (side=[-1,1]) {
-               one_side_key_placement(side, nb_c=1, nb_r=nb_rows, nb_t=nb_thumbs)
-                    rounded_square([base+border*2, base+border*2], r=r, center=true);
-          }
-          translate([0, -20+top-case_border+border+1.2]) rounded_square([top_wide+border*2, 40], center=true, r=r);
-     }
+module outline(border, r, base=choc?[18, 17]:[19.05, 19.05], no_top=false) {
+    union() {
+        for (side=[-1,1]) {
+            hull() one_side_key_placement(side, nb_cols, nb_rows, nb_thumbs)
+                rounded_square([base[0]+border*2, base[1]+border*2], r=r, center=true);
+        }
+        hull() for (side=[-1,1]) {
+            one_side_key_placement(side, nb_c=1, nb_r=nb_rows, nb_t=nb_thumbs)
+                rounded_square([base[0]+border*2, base[1]+border*2], r=r, center=true);
+        }
+        if (!no_top)
+            translate([0, -20+top+1.2])
+                rounded_square([top_wide+border*2, 40], center=true, r=r);
+    }
 }
 
 module screw_placement() {
@@ -111,9 +113,9 @@ module plate() {
      difference() {
           union() {
               difference() {
-                  translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(case_border, r=2);
+                  translate([0,0,-switch_depth]) linear_extrude(switch_depth) outline(case_border, r=rounding);
                   translate([0, 0, -(choc?2.2:5)-switch_depth]) linear_extrude(switch_depth) {
-                      outline(0, r=0);
+                      outline(0, r=0, base=[15,15], no_top=true);
                   }
               }
               pill_cube();
@@ -137,7 +139,7 @@ module case() {
                case_thichness=1.6;
                case_depth=switch_depth+case_thichness;
                difference() {
-                    translate([0,0,-case_depth]) linear_extrude(case_thichness) outline(case_border, r=2);
+                    translate([0,0,-case_depth]) linear_extrude(case_thichness) outline(case_border, r=rounding);
                     //pill_placement() usb_c_pill_pocket();
                     pill_cube(epsilon=0.2);
                }
