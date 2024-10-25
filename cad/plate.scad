@@ -16,7 +16,7 @@ deltas=[0,2,6,2,-10];// column stagger
 rotate_thumb_switch=false;
 aligned_thumbs=false;
 center_screw=true;
-center_screw_offset=(nb_rows+1)*inter_switch_y+7;
+center_screw_offset=(nb_rows+0.75)*inter_switch_y;
 
 hand_spacing=22;
 hand_angle=30;
@@ -82,8 +82,8 @@ module screw_placement() {
           for (i=[-1,1]) {
                translate([i*18,-5,-pill_depth]) children();
           }
-          if (center_screw) translate([0,-center_screw_offset,-pill_depth]) children();
      }
+     if (center_screw) translate([0,-center_screw_offset,0]) children();
      for (s=[-1,1]) {
           translate([s * hand_spacing/2,0,0]) rotate([0,0,s*hand_angle/2]) {
                offset=3.5;
